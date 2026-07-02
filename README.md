@@ -155,6 +155,7 @@ Will integrate ecological, economic, connectivity and contiguous metrics into a 
   - Economic value
   - Oil and gas locations
   - Contiguity (interior edge ratio) metrics  
+- GitHub Pages app scaffold in `docs/` for exploring ranked parcel swap proposals
 
 ---
 
@@ -177,6 +178,11 @@ Requirements: conda (or Anaconda) must be installed. Packages are pulled from co
 - All necessary data is downloaded from API calls 
 - All paths are relative to project root  
 - Data sources (GBIF, parcel API, oil and gas data) are dynamic and may change  
+
+**3.**  
+To rebuild the full-boundary parcel swap web app data and refresh the GitHub Pages site in `docs/`, run:
+
+`conda run -n earth-analytics-python python code/09_build_parcel_swap_site.py`
 
 ---
 

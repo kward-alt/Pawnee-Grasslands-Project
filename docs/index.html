@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pawnee Parcel Swap Explorer</title>
+    <meta
+      name="description"
+      content="Interactive parcel swap explorer for the Pawnee National Grassland."
+    >
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    >
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Pawnee National Grassland</p>
+          <h1>Parcel Swap Explorer</h1>
+          <p class="lede">
+            Explore notebook-08 parcel swaps that improve the contiguity of
+            federally managed land across the full Pawnee Grassland boundary.
+          </p>
+        </div>
+        <div class="hero-meta">
+          <div class="metric-card">
+            <span class="metric-label">Ranking metric</span>
+            <strong>Interior edge ratio gain</strong>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Interaction</span>
+            <strong>Select a proposal or parcel</strong>
+          </div>
+        </div>
+      </header>
+
+      <section class="stats" id="summary-cards" aria-label="Summary statistics"></section>
+
+      <main class="workspace">
+        <aside class="sidebar">
+          <section class="panel">
+            <h2>How to read the map</h2>
+            <p>
+              Green parcels are acquisition candidates. Red parcels are potential
+              federal releases. Amber polygons show mapped multi-parcel federal patches.
+            </p>
+            <p>
+              Use the filters to narrow the ranked list, then click a proposal to
+              zoom to both parcels and inspect its tradeoffs.
+            </p>
+          </section>
+
+          <section class="panel controls">
+            <div class="control-group">
+              <label for="proposal-search">Search</label>
+              <input id="proposal-search" type="search" placeholder="Parcel ID or patch ID">
+            </div>
+
+            <div class="control-group">
+              <label for="ownership-filter">Acquire ownership</label>
+              <select id="ownership-filter">
+                <option value="ALL">All ownership types</option>
+                <option value="STATE">State only</option>
+                <option value="PRIVATE">Private only</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label for="swap-type-filter">Swap type</label>
+              <select id="swap-type-filter">
+                <option value="ALL">All swaps</option>
+                <option value="same">Same-patch only</option>
+                <option value="cross">Cross-patch only</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label for="min-gain-filter">Minimum net gain</label>
+              <input id="min-gain-filter" type="range" min="0" max="1" step="0.0005" value="0">
+              <output id="min-gain-output" for="min-gain-filter">0.0000</output>
+            </div>
+
+            <div class="control-group">
+              <label for="max-area-diff-filter">Maximum area difference (%)</label>
+              <input id="max-area-diff-filter" type="range" min="0" max="10" step="0.5" value="10">
+              <output id="max-area-diff-output" for="max-area-diff-filter">10.0%</output>
+            </div>
+
+            <div class="control-group">
+              <label for="proposal-limit">List length</label>
+              <select id="proposal-limit">
+                <option value="25">Top 25</option>
+                <option value="50">Top 50</option>
+                <option value="100" selected>Top 100</option>
+                <option value="250">Top 250</option>
+                <option value="ALL">All results</option>
+              </select>
+            </div>
+
+            <div class="button-row">
+              <button id="reset-view" type="button">Reset map</button>
+              <button id="clear-selection" type="button">Clear selection</button>
+            </div>
+          </section>
+
+          <section class="panel detail-panel">
+            <div class="panel-heading">
+              <h2>Selected proposal</h2>
+              <span id="selected-tag" class="status-chip">No selection</span>
+            </div>
+            <div id="proposal-detail" class="detail-body">
+              Choose a ranked proposal to inspect its swap pair, patch change, and parcel values.
+            </div>
+          </section>
+
+          <section class="panel list-panel">
+            <div class="panel-heading">
+              <h2>Ranked proposals</h2>
+              <span id="result-count" class="status-chip">0 results</span>
+            </div>
+            <div id="proposal-list" class="proposal-list" aria-live="polite"></div>
+          </section>
+        </aside>
+
+        <section class="map-panel">
+          <div id="map" role="img" aria-label="Parcel swap map"></div>
+          <div class="map-legend">
+            <span><i class="legend-swatch patch"></i>Federal patch</span>
+            <span><i class="legend-swatch acquire"></i>Acquire</span>
+            <span><i class="legend-swatch release"></i>Release</span>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
