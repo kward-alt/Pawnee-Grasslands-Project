@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-07-02T23:03:09.571203+00:00",
+  "parcelCount": 3474,
+  "federalParcelCount": 598,
+  "stateParcelCount": 119,
+  "privateParcelCount": 2757,
+  "patchCount": 48,
+  "proposalCount": 100,
+  "notebookProposalCount": 213,
+  "samePatchCount": 44,
+  "crossPatchCount": 56,
+  "uniqueAcquireCandidates": 67,
+  "uniqueReleaseCandidates": 58,
+  "topNetGain": 0.1844,
+  "topProposalRank": 1
+}
