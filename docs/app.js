@@ -28,7 +28,6 @@ const state = {
   patchLayers: new Map(),
   parcelById: new Map(),
   filters: {
-    search: "",
     ownership: "ALL",
     swapType: "ALL",
     minGain: 0,
@@ -68,7 +67,6 @@ async function init() {
 
 function cacheDom() {
   controls.summaryCards = document.getElementById("summary-cards");
-  controls.search = document.getElementById("proposal-search");
   controls.ownership = document.getElementById("ownership-filter");
   controls.swapType = document.getElementById("swap-type-filter");
   controls.minGain = document.getElementById("min-gain-filter");
@@ -85,11 +83,6 @@ function cacheDom() {
 }
 
 function bindControls() {
-  controls.search.addEventListener("input", () => {
-    state.filters.search = controls.search.value.trim().toUpperCase();
-    applyFilters();
-  });
-
   controls.ownership.addEventListener("change", () => {
     state.filters.ownership = controls.ownership.value;
     applyFilters();
@@ -174,6 +167,12 @@ function createMap(parcels, patches, master) {
     onEachFeature(feature, layer) {
       state.patchLayers.set(feature.properties.patchId, layer);
       layer.bindPopup(patchPopup(feature.properties), { className: "popup" });
+      layer.bindTooltip(patchTooltip(feature.properties), {
+        className: "map-tooltip",
+        sticky: true,
+        direction: "top",
+        opacity: 0.96,
+      });
     },
   }).addTo(state.map);
 
@@ -182,6 +181,12 @@ function createMap(parcels, patches, master) {
     onEachFeature(feature, layer) {
       state.parcelLayers.set(feature.properties.parcelId, layer);
       layer.bindPopup(parcelPopup(feature.properties), { className: "popup" });
+      layer.bindTooltip(parcelTooltip(feature.properties), {
+        className: "map-tooltip",
+        sticky: true,
+        direction: "top",
+        opacity: 0.96,
+      });
       layer.on("click", () => {
         const matching = state.filteredProposals.find(
           (proposal) =>
@@ -225,8 +230,6 @@ function createMap(parcels, patches, master) {
 }
 
 function applyFilters() {
-  const search = state.filters.search;
-
   let proposals = state.proposals.filter((proposal) => {
     if (state.filters.ownership !== "ALL" && proposal.acquireOwnership !== state.filters.ownership) {
       return false;
@@ -245,18 +248,6 @@ function applyFilters() {
 
     if (proposal.areaDiffPct > state.filters.maxAreaDiff) {
       return false;
-    }
-
-    if (search) {
-      const haystack = [
-        proposal.receivePatchId,
-        proposal.releasePatchId,
-        proposal.acquireParcelId,
-        proposal.releaseParcelId,
-      ]
-        .join(" ")
-        .toUpperCase();
-      return haystack.includes(search);
     }
 
     return true;
@@ -407,10 +398,12 @@ function refreshLayerStyles() {
   state.layers.parcels.eachLayer((layer) => {
     layer.setStyle(parcelStyle({ properties: layer.feature.properties }));
     layer.setPopupContent(parcelPopup(layer.feature.properties), { className: "popup" });
+    layer.setTooltipContent(parcelTooltip(layer.feature.properties));
   });
 
   state.layers.patches.eachLayer((layer) => {
     layer.setStyle(patchStyle({ properties: layer.feature.properties }));
+    layer.setTooltipContent(patchTooltip(layer.feature.properties));
   });
 
   if (state.selectedProposal) {
@@ -545,6 +538,17 @@ function parcelPopup(props) {
   `;
 }
 
+function parcelTooltip(props) {
+  return `
+    <div class="popup tooltip-card">
+      <h3>${props.parcelId}</h3>
+      <p><strong>${props.ownership}</strong> parcel</p>
+      <p>GIS acres: ${formatDecimal(props.gisAcres, 1)}</p>
+      <p>Best proposal rank: ${props.bestRank ?? "N/A"}</p>
+    </div>
+  `;
+}
+
 function patchPopup(props) {
   return `
     <div class="popup">
@@ -552,6 +556,16 @@ function patchPopup(props) {
       <p>Area: ${formatDecimal(props.areaAcres, 1)} acres</p>
       <p>Parcels: ${formatInteger(props.parcelCount)}</p>
       <p>Interior edge ratio: ${formatDecimal(props.interiorEdgeRatio, 4)}</p>
+    </div>
+  `;
+}
+
+function patchTooltip(props) {
+  return `
+    <div class="popup tooltip-card">
+      <h3>${props.patchId}</h3>
+      <p>Area: ${formatDecimal(props.areaAcres, 1)} acres</p>
+      <p>Parcels: ${formatInteger(props.parcelCount)}</p>
     </div>
   `;
 }
